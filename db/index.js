@@ -1,14 +1,10 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/cows', {useNewUrlParser: true});
+var mysql = require('mysql');
 
-var db = mongoose.connection;
-
-let cowSchema = new mongoose.Schema({
-  name: String,
-  description: String
+exports.db = mysql.createConnection({
+  host: 'localhost',
+  user: "root",
+  password: "0618",
+  database: "cows"
 });
 
-let Cows = mongoose.model('Cows', cowSchema);
-
-
-//module.exports. --- = ---
+exports.db.connect();

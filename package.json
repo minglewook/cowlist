@@ -22,11 +22,14 @@
   "dependencies": {
     "body-parser": "^1.17.0",
     "cors": "^2.8.5",
+    "db": "^1.1.1",
     "express": "^4.17.1",
     "jquery": "^3.4.1",
+    "mongo": "^0.1.0",
     "mongoose": "^4.13.19",
     "react": "^16.10.1",
-    "react-dom": "^16.10.1"
+    "react-dom": "^16.10.1",
+    "sequelize": "^5.19.2"
   },
   "devDependencies": {
     "webpack": "^4.41.0",

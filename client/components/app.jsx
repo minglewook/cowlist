@@ -1,38 +1,173 @@
-// Frontend Requirements
-// Build the Create and Read functionality of a CRUD app using React. The frontend should make use of the already created RESTful API endpoints to accomplish the following user stories:
-
-// When the user loads the page, the user should see a list of all names of previously created cows (but not their descriptions).
-
-// When the user types the name and description of a new cow they want to input into the database and presses the [Submit] button, the newly created cow's information should be displayed in the list from the previous step only after the data has been successfully written to the database.
-
-// When the user clicks on the name of a cow, the name and description of that cow should be displayed prominently at the top of the page (so as to mimic the functionality of a modal/popup that shows the details of a particular cow).
-
-// a. Only the details of the most recently clicked cow should be prominently displayed at the top of the page at a time. For example, if Betsy is the first cow clicked, Betsy's information should be displayed. If Milkshake is clicked afterwards, only Milkshake's information should be displayed. Betsy's description should no longer be visible.
-
-// b. The details of any clicked cow should be prominently displayed in the same location in the DOM at the top of the page (aka not within the clicked component).
-
-
 import React from 'react'
+import CowList from './cowList.jsx'
+import TopCow from './topCow.jsx'
 //import other components
 
 
 class App extends React.Component {
   constructor(props) {
-    super (props);
+    super (props)
 
     this.state = {
-
+      name : '',
+      description: '',
+      showDescription : false,
+      cowList : [], 
+      active : {id: '', name: '', description: ''}
     }
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleUpdate = this.handleUpdate.bind(this);
+  }
+
+  handleNameChange(event) {
+    this.setState({name: event.target.value})
+  }
+
+  handleDescriptionChange(event) {
+    this.setState({description: event.target.value})
+  }
+
+  handleClick(id, name, description){
+    this.setState({
+      active : {id: id, name : name, description: description},
+      //showDescription: !showDescription
+    })
+  }
+
+  handleUpdate() {
+    event.preventDefault()
+    fetch('/api/cows',
+      { method: 'UPDATE',
+          body: JSON.stringify(this.state.active),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(() => {
+          fetch('http://localhost:3000/api/cows')
+            .then((result) => {
+              return result.json()
+            })
+            .then((parsed) => {
+              this.setState({
+                cowList: parsed
+              })
+            })
+            .catch()
+        })
+          .catch(err =>{    
+            console.log(err);
+          })
+  }
+
+  handleDelete() {
+    fetch('/api/cows',
+      { method: 'DELETE',
+          body: JSON.stringify(this.state.active),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(() => {
+          fetch('http://localhost:3000/api/cows')
+            .then((result) => {
+              return result.json()
+            })
+            .then((parsed) => {
+              this.setState({
+                active : {id: '', name: '', description: ''},
+                cowList: parsed
+              })
+            })
+            .catch()
+        })
+        .catch(err =>{    
+            console.log(err);
+          })
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    let data = {
+        name: this.state.name,
+        description: this.state.description
+      }
+      fetch('/api/cows',
+      { method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(() => {
+          fetch('http://localhost:3000/api/cows')
+            .then((result) => {
+              return result.json()
+            })
+            .then((parsed) => {
+              this.setState({
+                cowList: parsed
+              })
+            })
+            .catch()
+        })
+          .catch(err =>{    
+            console.log(err);
+          })
+  }
+  
+
+  componentDidMount() {
+    fetch('http://localhost:3000/api/cows')
+      .then((result) => {
+        return result.json()
+      })
+      .then((parsed) => {
+        this.setState({
+          cowList: parsed
+        })
+      })
+      .catch()
   }
 
 
-
-componentDidMount() {
-
-}
-
 render() {
+  return (
+    <div>
+    <form onSubmit={this.handleSubmit}>
+      <label>
+        Name:
+        <input type="text" value={this.state.value} onChange={this.handleNameChange}
+        />
+      </label>
+      <label>
+        Description:
+        <input type="text" value={this.state.value} onChange={this.handleDescriptionChange}/>
+      </label>
+      <input type="submit" value="Submit"/>
+    </form>
+    <form>
+      <label>
+      Update Name: 
+        <input type="text" value={this.state.value}/>
+      </label>
+      <label>
+      Update Description: 
+        <input type="text" value={this.state.value}/>
+      </label>
+      <input type="submit" value="update" onClick={this.handleUpdate}/>
+    </form>
+    
+    <TopCow active={this.state.active} />
+    <CowList list={this.state.cowList} handleClick={this.handleClick} />
 
+    <input type="submit" value="delete" onClick={this.handleDelete}/>
+    </div>
+  )
 }
 
 

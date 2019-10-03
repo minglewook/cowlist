@@ -22,7 +22,7 @@ app.get('/api/cows', (req, res) => {
       console.log(err);
       res.status(400).send();
     } else {
-      console.log(results)
+      console.log('RESULTS ', results)
       res.status(200).send(results);
     }
   })
@@ -38,11 +38,41 @@ app.post('/api/cows', (req, res) => {
       console.log(err)
       res.status(400).send();
     } else {
+
       res.status(200).send(results);
     }
   })
 
 });
+
+
+//update
+app.put('/api/cows', (req, res) => {
+  let queryStr = `Update cows set name = ${req.body.name}, description = ${req.body.description} where id = ${req.body.id}`
+  db.query(queryStr, (err) => {
+    if (err) {
+      console.log(err);
+      res.status(400).send(err)
+    } else {
+      res.status(200).send()
+    }
+  })
+})
+
+
+//delete
+app.delete('/api/cows', (req, res) => {
+  let queryStr = `delete from cows where id = ${req.body.id}`
+  db.query(queryStr, (err) => {
+    if (err) {
+      console.log('Please pick something to delete ', err)
+      res.status(400).send()
+    } else {
+      res.status(200).send()
+    }
+  })
+})
+
 
 //app.listen
 
